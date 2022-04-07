@@ -1,3 +1,3 @@
-module github.com/mattn/go-redmine
+module github.com/rockmenjack/go-redmine
 
-go 1.13
+go 1.18

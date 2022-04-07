@@ -9,6 +9,10 @@ import (
 	"strings"
 )
 
+type issueCreate struct {
+	Issue IssueCreate `json:"issue"`
+}
+
 type issueRequest struct {
 	Issue Issue `json:"issue"`
 }
@@ -39,37 +43,37 @@ type Journal struct {
 }
 
 type Issue struct {
-	Id           int            `json:"id"`
-	Subject      string         `json:"subject"`
-	Description  string         `json:"description"`
-	ProjectId    int            `json:"project_id"`
-	Project      *IdName        `json:"project"`
-	TrackerId    int            `json:"tracker_id"`
-	Tracker      *IdName        `json:"tracker"`
-	ParentId     int            `json:"parent_issue_id,omitempty"`
-	Parent       *Id            `json:"parent"`
-	StatusId     int            `json:"status_id"`
-	Status       *IdName        `json:"status"`
-	PriorityId   int            `json:"priority_id,omitempty"`
-	Priority     *IdName        `json:"priority"`
-	Author       *IdName        `json:"author"`
-	FixedVersion *IdName        `json:"fixed_version"`
-	AssignedTo   *IdName        `json:"assigned_to"`
-	AssignedToId int            `json:"assigned_to_id"`
-	Category     *IdName        `json:"category"`
-	CategoryId   int            `json:"category_id"`
-	Notes        string         `json:"notes"`
-	StatusDate   string         `json:"status_date"`
-	CreatedOn    string         `json:"created_on"`
-	UpdatedOn    string         `json:"updated_on"`
-	StartDate    string         `json:"start_date"`
-	DueDate      string         `json:"due_date"`
-	ClosedOn     string         `json:"closed_on"`
-	CustomFields []*CustomField `json:"custom_fields,omitempty"`
-	Uploads      []*Upload      `json:"uploads"`
-	DoneRatio    float32        `json:"done_ratio"`
-	EstimatedHours float32      `json:"estimated_hours"`
-	Journals     []*Journal     `json:"journals"`
+	Id             int            `json:"id"`
+	Subject        string         `json:"subject"`
+	Description    string         `json:"description"`
+	ProjectId      int            `json:"project_id"`
+	Project        *IdName        `json:"project"`
+	TrackerId      int            `json:"tracker_id"`
+	Tracker        *IdName        `json:"tracker"`
+	ParentId       int            `json:"parent_issue_id,omitempty"`
+	Parent         *Id            `json:"parent"`
+	StatusId       int            `json:"status_id"`
+	Status         *IdName        `json:"status"`
+	PriorityId     int            `json:"priority_id,omitempty"`
+	Priority       *IdName        `json:"priority"`
+	Author         *IdName        `json:"author"`
+	FixedVersion   *IdName        `json:"fixed_version"`
+	AssignedTo     *IdName        `json:"assigned_to"`
+	AssignedToId   int            `json:"assigned_to_id"`
+	Category       *IdName        `json:"category"`
+	CategoryId     int            `json:"category_id"`
+	Notes          string         `json:"notes"`
+	StatusDate     string         `json:"status_date"`
+	CreatedOn      string         `json:"created_on"`
+	UpdatedOn      string         `json:"updated_on"`
+	StartDate      string         `json:"start_date"`
+	DueDate        string         `json:"due_date"`
+	ClosedOn       string         `json:"closed_on"`
+	CustomFields   []*CustomField `json:"custom_fields,omitempty"`
+	Uploads        []*Upload      `json:"uploads"`
+	DoneRatio      float32        `json:"done_ratio"`
+	EstimatedHours float32        `json:"estimated_hours"`
+	Journals       []*Journal     `json:"journals"`
 }
 
 type IssueFilter struct {
@@ -136,8 +140,8 @@ func (c *Client) Issues() ([]Issue, error) {
 	return issues, nil
 }
 
-func (c *Client) CreateIssue(issue Issue) (*Issue, error) {
-	var ir issueRequest
+func (c *Client) CreateIssue(issue IssueCreate) (*Issue, error) {
+	var ir issueCreate
 	ir.Issue = issue
 	s, err := json.Marshal(ir)
 	if err != nil {
@@ -155,7 +159,7 @@ func (c *Client) CreateIssue(issue Issue) (*Issue, error) {
 	defer res.Body.Close()
 
 	decoder := json.NewDecoder(res.Body)
-	var r issueRequest
+	var r issueResult
 	if res.StatusCode != 201 {
 		var er errorsResult
 		err = decoder.Decode(&er)
