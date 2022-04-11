@@ -43,37 +43,37 @@ type Journal struct {
 }
 
 type Issue struct {
-	Id             int            `json:"id"`
-	Subject        string         `json:"subject"`
-	Description    string         `json:"description"`
-	ProjectId      int            `json:"project_id"`
-	Project        *IdName        `json:"project"`
-	TrackerId      int            `json:"tracker_id"`
-	Tracker        *IdName        `json:"tracker"`
+	Id             int            `json:"id,omitempty"`
+	Subject        string         `json:"subject,omitempty"`
+	Description    string         `json:"description,omitempty"`
+	ProjectId      int            `json:"project_id,omitempty"`
+	Project        *IdName        `json:"project,omitempty"`
+	TrackerId      int            `json:"tracker_id,omitempty"`
+	Tracker        *IdName        `json:"tracker,omitempty"`
 	ParentId       int            `json:"parent_issue_id,omitempty"`
-	Parent         *Id            `json:"parent"`
-	StatusId       int            `json:"status_id"`
-	Status         *IdName        `json:"status"`
+	Parent         *Id            `json:"parent,omitempty"`
+	StatusId       int            `json:"status_id,omitempty"`
+	Status         *IdName        `json:"status,omitempty"`
 	PriorityId     int            `json:"priority_id,omitempty"`
-	Priority       *IdName        `json:"priority"`
-	Author         *IdName        `json:"author"`
-	FixedVersion   *IdName        `json:"fixed_version"`
-	AssignedTo     *IdName        `json:"assigned_to"`
-	AssignedToId   int            `json:"assigned_to_id"`
-	Category       *IdName        `json:"category"`
-	CategoryId     int            `json:"category_id"`
-	Notes          string         `json:"notes"`
-	StatusDate     string         `json:"status_date"`
-	CreatedOn      string         `json:"created_on"`
-	UpdatedOn      string         `json:"updated_on"`
-	StartDate      string         `json:"start_date"`
-	DueDate        string         `json:"due_date"`
-	ClosedOn       string         `json:"closed_on"`
+	Priority       *IdName        `json:"priority,omitempty"`
+	Author         *IdName        `json:"author,omitempty"`
+	FixedVersion   *IdName        `json:"fixed_version,omitempty"`
+	AssignedTo     *IdName        `json:"assigned_to,omitempty"`
+	AssignedToId   int            `json:"assigned_to_id,omitempty"`
+	Category       *IdName        `json:"category,omitempty"`
+	CategoryId     int            `json:"category_id,omitempty"`
+	Notes          string         `json:"notes,omitempty"`
+	StatusDate     string         `json:"status_date,omitempty"`
+	CreatedOn      string         `json:"created_on,omitempty"`
+	UpdatedOn      string         `json:"updated_on,omitempty"`
+	StartDate      string         `json:"start_date,omitempty"`
+	DueDate        string         `json:"due_date,omitempty"`
+	ClosedOn       string         `json:"closed_on,omitempty"`
 	CustomFields   []*CustomField `json:"custom_fields,omitempty"`
-	Uploads        []*Upload      `json:"uploads"`
-	DoneRatio      float32        `json:"done_ratio"`
-	EstimatedHours float32        `json:"estimated_hours"`
-	Journals       []*Journal     `json:"journals"`
+	Uploads        []*Upload      `json:"uploads,omitempty"`
+	DoneRatio      float32        `json:"done_ratio,omitempty"`
+	EstimatedHours float32        `json:"estimated_hours,omitempty"`
+	Journals       []*Journal     `json:"journals,omitempty"`
 }
 
 type IssueFilter struct {
@@ -83,7 +83,7 @@ type IssueFilter struct {
 	StatusId     string
 	AssignedToId string
 	UpdatedOn    string
-	ExtraFilters map[string]string
+	ExtraFilters []string
 }
 
 type CustomField struct {
@@ -193,21 +193,20 @@ func (c *Client) UpdateIssue(issue Issue) error {
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode == 404 {
+	switch {
+	case res.StatusCode == 404:
 		return errors.New("Not Found")
-	}
-	if res.StatusCode != 200 {
+	case res.StatusCode <= 199 || res.StatusCode >= 299:
 		decoder := json.NewDecoder(res.Body)
 		var er errorsResult
 		err = decoder.Decode(&er)
 		if err == nil {
 			err = errors.New(strings.Join(er.Errors, "\n"))
 		}
-	}
-	if err != nil {
 		return err
 	}
-	return err
+
+	return nil
 }
 
 func (c *Client) DeleteIssue(id int) error {
@@ -292,11 +291,7 @@ func getIssueFilterClause(filter *IssueFilter) string {
 	}
 
 	if filter.ExtraFilters != nil {
-		extraFilter := make([]string, 0)
-		for key, value := range filter.ExtraFilters {
-			extraFilter = append(extraFilter, fmt.Sprintf("%s=%s", key, value))
-		}
-		clause = clause + "&" + strings.Join(extraFilter[:], "&")
+		clause = clause + "&" + strings.Join(filter.ExtraFilters, "&")
 	}
 
 	return clause

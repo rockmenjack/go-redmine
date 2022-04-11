@@ -28,8 +28,8 @@ type Membership struct {
 	Groups  []IdName `json:"groups"`
 }
 
-func (c *Client) Memberships(projectId int) ([]Membership, error) {
-	res, err := c.Get(c.endpoint + "/projects/" + strconv.Itoa(projectId) + "/memberships.json?key=" + c.apikey + c.getPaginationClause())
+func (c *Client) Memberships(projectId string) ([]Membership, error) {
+	res, err := c.Get(c.endpoint + "/projects/" + projectId + "/memberships.json?key=" + c.apikey + c.getPaginationClause())
 	if err != nil {
 		return nil, err
 	}
