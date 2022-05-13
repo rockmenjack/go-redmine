@@ -8,5 +8,6 @@ type IssueCreate struct {
 	ParentId     int            `json:"parent_issue_id,omitempty"`
 	PriorityId   int            `json:"priority_id,omitempty"`
 	AssignedToId int            `json:"assigned_to_id,omitempty"`
+	DueDate      string         `json:"due_date,omitempty"`
 	CustomFields []*CustomField `json:"custom_fields,omitempty"`
 }
