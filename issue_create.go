@@ -5,6 +5,7 @@ type IssueCreate struct {
 	Description  string         `json:"description,omitempty"`
 	ProjectId    string         `json:"project_id,omitempty"`
 	TrackerId    string         `json:"tracker_id,omitempty"`
+	StatusId     *int           `json:"status_id,omitempty"`
 	ParentId     int            `json:"parent_issue_id,omitempty"`
 	PriorityId   int            `json:"priority_id,omitempty"`
 	AssignedToId int            `json:"assigned_to_id,omitempty"`

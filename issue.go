@@ -52,7 +52,7 @@ type Issue struct {
 	Tracker        *IdName        `json:"tracker,omitempty"`
 	ParentId       int            `json:"parent_issue_id,omitempty"`
 	Parent         *Id            `json:"parent,omitempty"`
-	StatusId       int            `json:"status_id,omitempty"`
+	StatusId       *int           `json:"status_id,omitempty"`
 	Status         *IdName        `json:"status,omitempty"`
 	PriorityId     int            `json:"priority_id,omitempty"`
 	Priority       *IdName        `json:"priority,omitempty"`
