@@ -342,10 +342,12 @@ func getOneIssue(c *Client, id int, args map[string]string) (*Issue, error) {
 }
 
 func getIssue(c *Client, url string, offset int) (*issuesResult, error) {
-	res, err := c.Get(c.endpoint + url + "&offset=" + strconv.Itoa(offset))
+	urlWithOffset := c.endpoint + url + "&offset=" + strconv.Itoa(offset)
+
+	res, err := c.Get(urlWithOffset)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get issue from %s: %w", urlWithOffset, err)
 	}
 	defer res.Body.Close()
 
@@ -361,7 +363,7 @@ func getIssue(c *Client, url string, offset int) (*issuesResult, error) {
 		err = decoder.Decode(&r)
 	}
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get issue from %s: %w", urlWithOffset, err)
 	}
 
 	return &r, nil
@@ -375,7 +377,7 @@ func getIssues(c *Client, url string) ([]Issue, error) {
 		r, err := getIssue(c, url, len(issues))
 
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to get issue from %s: %w", url, err)
 		}
 
 		if r.TotalCount == uint(len(issues)) {
