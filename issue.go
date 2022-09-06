@@ -226,7 +226,7 @@ func (c *Client) DeleteIssue(id int) error {
 	}
 
 	decoder := json.NewDecoder(res.Body)
-	if res.StatusCode != 200 {
+	if res.StatusCode <= 199 || res.StatusCode >= 299 {
 		var er errorsResult
 		err = decoder.Decode(&er)
 		if err == nil {
